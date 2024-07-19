@@ -18,8 +18,7 @@ export interface IOrder {
   email: string;
   phoneNumber: string;
 	address: string;
-	totalPayment: number;
-	productsList: string[];
+	basket: IBasket;
 }
 
 export interface IOrderResult {
@@ -44,7 +43,7 @@ export interface IBasket {
 
 export interface IAppStateModel {
 	productsList: IProduct[];
-	basket: string[];
+	basket: IBasket;
 	order: IOrder | null;
 }
 
