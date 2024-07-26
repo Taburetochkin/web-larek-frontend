@@ -90,7 +90,8 @@ interface IOrder {
   email: string;
   phoneNumber: string;
 	address: string;
-	basket: IBasket;
+	items: string[];
+	total: number;
 }
 ```
 
@@ -121,12 +122,12 @@ interface IOrderContacts {
 }
 ```
 
-**IBasket** - интерфейс карточек в корзине
+**IBasketCard** - интерфейс карточек в корзине
 
 ```
-interface IBasket {
+interface IBasketCard {
 	title: string;
-	totalPrice: number;
+	price: number;
 }
 ```
 
@@ -135,15 +136,15 @@ interface IBasket {
 ```
 interface IAppStateModel {
 	productsList: IProduct[];
-	basket: IBasket;
+	basket: string[];
 	order: IOrder | null;
 }
 ```
 
-**IFormActions** - обработчик событий мыши
+**ICardActions** - обработчик событий мыши
 
 ```
-interface IFormActions {
+interface ICardActions {
 	onClick: (event: MouseEvent) => void;
 }
 ```
@@ -189,11 +190,11 @@ interface IFormActions {
 - Базовый класс для создания элементов, отвечающих за визуальное представления интерфейса приложения, в том числе контейнеров, содержащих данные элементы.
 - **Конструктор** - `constructor(container: HTMLElement)` - Принимает `HTML-элемент`, в который будет помещен компонент.
 - **Методы**
-	- `toggleClass(element: HTMLElement, className: string, force?: - boolean)` - Переключает класс `className` для элемента element.
-  - `setText(element: HTMLElement, text: any)` - Устанавливает текстовое содержимое элемента.
-	- `setDisabled(element: HTMLElement, disabled: boolean)` - Устанавливает или снимает атрибут `disabled` для элемента.
-	- `setHidden(element: HTMLElement)` - Скрывает элемент.
+	- `toggleClass(element: HTMLElement, className: string, state?: boolean)` - Переключает класс `className` для элемента element.
 	- `setVisible(element: HTMLElement)` - Отображает элемент.
+	- `setHidden(element: HTMLElement)` - Скрывает элемент.
+  - `setText(element: HTMLElement, text: unknown)` - Устанавливает текстовое содержимое элемента.
+	- `setDisabled(element: HTMLElement, disabled: boolean)` - Устанавливает или снимает атрибут `disabled` для элемента.
 	- `setImage(element: HTMLImageElement, src: string, alt?: string)` - Устанавливает атрибуты `src` и `alt` для изображения.
 	- `render(data?: Partial)``: HTMLElement` - Отрисовывает компонент с предоставленными данными и возвращает корневой `DOM-элемент`.
 
@@ -210,9 +211,9 @@ interface IFormActions {
   - `wrapper: HTMLElement` - Обертка страницы.
   - `basket: HTMLElement` - Элемент корзины.
 - **Методы**
-	- `setCounter(count: number)` - Устанавливает значение счетчика товаров в корзине.
-	- `setCatalog(cards: HTMLElement[])` - Отображает карточки товаров в каталоге.
-	- `setLocked(locked: boolean)` - Блокирует прокрутку страницы, если locked равно true.
+	- `set counter(count: number)` - Устанавливает значение счетчика товаров в корзине.
+	- `set catalog(cards: HTMLElement[])` - Отображает карточки товаров в каталоге.
+	- `set locked(locked: boolean)` - Блокирует прокрутку страницы, если locked равно true.
 
 #### Класс Card
 
@@ -230,13 +231,13 @@ interface IFormActions {
 	- `price: HTMLElement` - Элемент цены.
   - `category: HTMLElement` - Элемент категории.
 - **Методы**
-	- `setTitle(title: string)` - Устанавливает заголовок карточки.
-	- `setImage(src: string)` - Устанавливает изображение карточки.
-	- `setDescription(text: string)` - Устанавливает описание карточки.
-	- `setButtonText(text: string)` - Устанавливает текст кнопки.
-	- `getPrice(): number` - Возвращает цену товара.
-	- `setPrice(price: number)` - Устанавливает цену товара.
-	- `setCategory(category: string)` - Устанавливает категорию товара и добавляет соответствующий класс.
+	- `set title(title: string)` - Устанавливает заголовок карточки.
+	- `set image(src: string)` - Устанавливает изображение карточки.
+	- `set description(text: string)` - Устанавливает описание карточки.
+	- `set button(text: string)` - Устанавливает текст кнопки.
+	- `get price(): number` - Возвращает цену товара.
+	- `set price(price: number)` - Устанавливает цену товара.
+	- `set category(category: string)` - Устанавливает категорию товара и добавляет соответствующий класс.
 
 #### Класс Basket
 
@@ -248,11 +249,10 @@ interface IFormActions {
 	- `list: HTMLElement` - Список товаров в корзине.
 	- `total: HTMLElement` - Элемент общей стоимости.
 	- `button: HTMLButtonElement` - Кнопка оформления заказа
-	- `items: HTMLElement[]` - Список карточек товаров в корзине.
 - **Методы**
 	- `toggleButton(disabled: boolean)` - Активирует/деактивирует кнопку оформления заказа.
-	- `setItems(items: HTMLElement[])` - Отображает карточки товаров в корзине.
-	- `setTotal(total: number)` - Устанавливает общую стоимость товаров.
+	- `set items(items: HTMLElement[])` - Отображает карточки товаров в корзине.
+	- `set total(total: number)` - Устанавливает общую стоимость товаров.
 
 #### Класс BasketCard
 
@@ -266,11 +266,9 @@ interface IFormActions {
 	- `index: HTMLElement` - Номер товара в корзине.
 	- `title: HTMLElement` - Название товара.
 	- `button: HTMLButtonElement` - Кнопка удаления.
-	- `price: HTMLElement` - Цена товара.
 - **Методы**
-	- `setTitle(title: string)` - Устанавливает название товара.
-	- `setPrice(price: number)` - Устанавливает цену товара.
-	- `setIndex(index: number)` - Устанавливает номер товара в корзине.
+	- `set title(title: string)` - Устанавливает название товара.
+	- `set idx(idx: number)` - Устанавливает номер товара в корзине.
 
 #### Класс Modal
 
@@ -283,7 +281,7 @@ interface IFormActions {
 	- `closeButton: HTMLButtonElement` - Кнопка закрытия окна.
 	- `content: HTMLElement` - Контейнер для содержимого окна.
 - **Методы**
-	- `setContent(content: HTMLElement | null)` - Устанавливает содержимое окна.
+	- `set content(content: HTMLElement | null)` - Устанавливает содержимое окна.
 	- `open()` - Открывает модальное окно.
 	- `close()` - Закрывает модальное окно.
 	- `render(data: { content: HTMLElement }): HTMLElement` - Отрисовывает окно с содержимым и возвращает корневой `DOM-элемент`.
@@ -299,10 +297,10 @@ interface IFormActions {
 	- `submit: HTMLButtonElement` - Кнопка отправки формы.
 	- `errors: HTMLElement` - Контейнер для сообщений об ошибках.
 - **Методы**
-	- `onInputChange(name: string, value: string)` - Обрабатывает изменение значения поля формы.
-	- `setValid(valid: boolean)` - Устанавливает доступность кнопки отправки в зависимости от валидности формы.
-	- `setErrors(errors: string)` - Отображает сообщения об ошибках.
-	- `render(data: { valid?: boolean, errors?: string, [key: string]: any }): HTMLFormElement` - Отрисовывает форму с данными и возвращает корневой `DOM-элемент`.
+	- `onInputChange(field: string, value: string)` - Обрабатывает изменение значения поля формы.
+	- `set validity(validity: boolean)` - Устанавливает доступность кнопки отправки в зависимости от валидности формы.
+	- `set errors(errors: string)` - Отображает сообщения об ошибках.
+	- `render(data: { validity?: boolean, errors?: string, [key: string]: any }): HTMLFormElement` - Отрисовывает форму с данными и возвращает корневой `DOM-элемент`.
 
 #### Класс OrderAddress
 
@@ -311,7 +309,7 @@ interface IFormActions {
 - **Конструктор** - `constructor(container: HTMLFormElement, events: IEvents)`
 - **Методы**
 	- `setButtonClass(name: string)` - Устанавливает класс `button_alt-active` для выбранной кнопки оплаты.
-	- `setAddress(address: string)` - Устанавливает значение поля адреса.
+	- `set address(address: string)` - Устанавливает значение поля адреса.
 
 #### Класс OrderContacts
 
@@ -322,8 +320,8 @@ interface IFormActions {
 	- `phoneInput: HTMLInputElement` - Поле ввода телефона. 
 	- `emailInput: HTMLInputElement` - Поле ввода email. 
 - **Методы**
-	`setPhone(phone: string)` - Устанавливает значение поля телефона.
-	`setEmail(email: string)` - Устанавливает значение поля email.
+	`set phone(phone: string)` - Устанавливает значение поля телефона.
+	`set email(email: string)` - Устанавливает значение поля email.
 
 #### Класс Success
 
@@ -342,20 +340,21 @@ interface IFormActions {
 
 Файл index.ts является главным модулем, который устанавливает связь между представлением и данными, реагируя на события с помощью подписки на брокер событий (экземпляр класса EventEmitter).
 
-- `products:changed` - изменение списка товаров, вызывает перерисовку каталога на странице.
-- `order:submit` - открытие модального окна для заполнения контактной информации при отправке заказа.
-- `formErrors:change` - изменение ошибок в форме заказа, обновление статуса валидации и ошибок для формы оплаты и контактов.
+- `catalog:change` - изменение списка товаров, вызывает перерисовку каталога на странице.
+- `contacts:open` - открытие модального окна для заполнения контактной информации при отправке заказа.
+- `formContactsErrors:change` - изменение ошибок в форме заказа, обновление статуса валидации и ошибок для формы контактов.
+- `formAddressErrors:change` - изменение ошибок в форме заказа, обновление статуса валидации и ошибок для формы адреса.
 - `^contacts\..*:change` - изменение полей контактной информации, обновление данных о контактах в приложении.
 - `^order\..*:change` - изменение адреса заказа, обновление соответствующего поля в приложении.
 - `order:open` - открытие модального окна для ввода данных оплаты.
 - `paymentMethod:changed` - выбор метода оплаты, обновление класса кнопки выбора оплаты и метода оплаты в приложении.
+- `order:submit` - отправка формы с адресом, переключение на форму с контактной информацией.
 - `contacts:submit` - отправка контактной информации, обработка данных заказа и отправка на сервер.
-- `card:selected` - выбор карточки товара, устанавливается превью товара.
-- `preview:changed` - изменение превью товара, отображение модального окна с информацией о товаре.
-- `card:addedToBasket` - добавление товара в корзину, закрытие модального окна.
-- `card:removeFromBasket` - удаление товара из корзины, обновление содержимого модального окна корзины.
+- `preview:change` - изменение превью товара, отображение модального окна с информацией о товаре.
+- `product:added` - добавление товара в корзину, закрытие модального окна.
+- `product:delete` - удаление товара из корзины, обновление содержимого модального окна корзины.
 - `basket:open` - открытие модального окна с содержимым корзины.
-- `basket:changed` - изменение списка товаров в корзине, обновление количества товаров на странице.
+- `basket:change` - изменение списка товаров в корзине, обновление количества товаров на странице.
 - `modal:open` - блокировка интерфейса страницы при открытии модального окна.
 - `modal:close` - разблокировка интерфейса страницы при закрытии модального окна.
 
@@ -389,4 +388,4 @@ interface IFormActions {
 - **Методы**
   - `getProductsList: () => Promise<IProduct[]>` - получает информацию по всем доступным товарам
   - `getProduct: (id: string) => Promise` - получает информацию по конкретному товару
-  - `orderProducts: (order: IOrder) => Promise` - оформление заказа через соответствующий запрос на сервер
+  - `sendOrder: (order: IOrder) => Promise` - оформление заказа через соответствующий запрос на сервер

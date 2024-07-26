@@ -1,6 +1,4 @@
-export type TPaymentType = 
-  'онлайн' | 
-  'при получении'
+export type TPaymentType = 'card' | 'cash'
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
@@ -14,20 +12,21 @@ export interface IProduct {
 }
 
 export interface IOrder {
-  paymentMethod: TPaymentType;
+  paymentMethod: string;
   email: string;
-  phoneNumber: string;
+  phone: string;
 	address: string;
-	basket: IBasket;
+	items: string[];
+	total: number;
 }
 
 export interface IOrderResult {
 	id: string;
-	totalPayment: number;
+	total: number;
 }
 
 export interface IOrderAddress {
-	paymentMethod: TPaymentType;
+	paymentMethod: string;
 	address: string;
 }
 
@@ -36,17 +35,17 @@ export interface IOrderContacts {
 	phone: string;
 }
 
-export interface IBasket {
+export interface IBasketCard {
 	title: string;
-	totalPrice: number;
+	price: number;
 }
 
 export interface IAppStateModel {
 	productsList: IProduct[];
-	basket: IBasket;
+	basket: string[];
 	order: IOrder | null;
 }
 
-export interface IFormActions {
+export interface ICardActions {
 	onClick: (event: MouseEvent) => void;
 }
