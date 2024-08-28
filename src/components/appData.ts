@@ -1,125 +1,117 @@
-import { IEvents } from './base/events';
-import { Model } from './base/model';
-import { IAppStateModel, IProduct, IOrder, IOrderContacts, FormErrors } from '../types';
+import { Model } from "./base/Model";
+import { IProduct, IAddressForm, IContactsForm, IOrder, FormErrors } from "../types";
+import { ICard } from "./Card";
 
-export class Product extends Model<IProduct> {
-	id: string;
-	description: string;
-	image: string;
-	title: string;
-	category: string;
-	price: number | null;
+export type CatalogChangeEvent = {
+  catalog: ICard[];
 }
 
-export class AppStateModel extends Model<IAppStateModel> {
-  basket: IProduct[] = []; 
-	catalog: IProduct[] = []; 
-	order: IOrder = {
-		paymentMethod: '',
-		email: '',
-		phone: '',
-		address: '',
-		items: [],
-		total: 0,
-	};
-  preview: string | null; 
-	formErrors: FormErrors = {}; 
+export interface IAppState {
+  catalog: IProduct;
+  order: IOrder | null;
+  errors: FormErrors;
+}
 
-  constructor(data: Partial<IAppStateModel>, protected events: IEvents) {
-    super(data, events);
+export class AppState extends Model<IAppState> {
+  basket: ICard[] = [];
+  catalog: ICard[];
+  preview: string | null;
+  order: IOrder = {
+    payment: '',
+    address: '',
+    email: '',
+    phone: '',
+    items: [],
+    total: 0,
+  };
+  errors: FormErrors = {};
+
+  setCatalog(items: ICard[]) {
+    this.catalog = items;
+    this.emitChanges('items:changed');
   }
-
-  addProduct(product: IProduct): void {
-		this.basket.push(product);
-		this.emitChanges('basket:change');
-	}
-
-  deleteProduct(id: string): void {
-		this.basket = this.basket.filter((product) => product.id !== id);
-		this.emitChanges('basket:change');
-	}
-
-  resetOrder(): void {
-		this.order = {
-			paymentMethod: '',
-			email: '',
-			phone: '',
-			address: '',
-			items: [],
-			total: 0,
-		};
-	}
-
-  resetBasket(): void {
-		this.basket.length = 0;
-		this.resetOrder();
-		this.emitChanges('basket:change');
-	}
-
-  getTotalOrder(): number {
-		return this.basket.reduce((acc, curr) => acc + curr.price, 0);
-	}
-
-  setCatalog(products: IProduct[]): void {
-		this.catalog = products.map((product) => new Product(product, this.events));
-		this.emitChanges('catalog:change', { catalog: this.catalog });
-	}
 
   getOrderedProducts(): IProduct[] {
 		return this.basket;
 	}
 
-  productOrdered(product: IProduct): boolean {
-		return this.basket.includes(product);
-	}
+  checkOrderedProduct(item: ICard): boolean {
+    return this.basket.includes(item);
+  }
 
-  setOrder(): void {
-		this.order.total = this.getTotalOrder();
-		this.order.items = this.getOrderedProducts().map((product) => product.id);
-	}
+  setPreview(item: ICard) {
+    this.preview = item.id;
+    this.emitChanges('preview:changed', item);
+  }
 
-  validateOrder() {
-		const errors: typeof this.formErrors = {};
-		if (!this.order.paymentMethod) {
-			errors.paymentMethod = 'Необходимо указать способ оплаты';
-		}
-		if (!this.order.address) {
-			errors.address = 'Необходимо указать адрес';
-		}
-		this.formErrors = errors;
-		this.events.emit('formAddressErrors:change', this.formErrors);
+  addToBasket(item: ICard) {
+    this.basket.push(item);
+    this.emitChanges('basket:changed');
+    this.emitChanges('number:changed');
+  }
+
+  deleteFromBasket(id: string) {
+    this.basket = this.basket.filter((item) => item.id !== id);
+    this.emitChanges('basket:changed');
+    this.emitChanges('number:changed');
+  }
+  getBasket (): ICard[] {
+    return this.basket;
+  }
+
+  getSum(): number {
+    return this.basket.reduce((acc, curr) => {
+      return acc + curr.price;
+    }, 0);
+  }
+
+  validateAddressForm() {
+    const errors: typeof this.errors = {};
+    if (!this.order.payment) {
+      errors.payment = 'Отсутствует способ оплаты';
+    }
+    if (!this.order.address) {
+      errors.address = 'Отсутствует адрес доставки';
+    }
+    this.errors = errors;
+    this.events.emit('addressErrors:changed', this.errors);
     return Object.keys(errors).length === 0;
-	}
+  }
 
-  setPaymentMethod(method: string): void {
-		this.order.paymentMethod = method;
-		this.validateOrder();
-	}
-
-  validateContacts() {
-		const errors: typeof this.formErrors = {};
-		if (!this.order.email) {
-			errors.email = 'Необходимо указать email';
-		}
-		if (!this.order.phone) {
-			errors.phone = 'Необходимо указать телефон';
-		}
-		this.formErrors = errors;
-		this.events.emit('formContactsErrors:change', this.formErrors);
+  validateContactsForm() {
+    const errors: typeof this.errors = {};
+    if (!this.order.email) {
+      errors.email = 'Отсутствует почта';
+    }
+    if (!this.order.phone) {
+      errors.phone = 'Отсутствует номер телефона';
+    }
+    this.errors = errors;
+    this.events.emit('contactsErrors:changed', this.errors);
     return Object.keys(errors).length === 0;
-	}
+  }
 
-  setContactsField(field: keyof Partial<IOrderContacts>, value: string): void {
-		this.order[field] = value;
-		this.validateContacts();
-	}
+  setAddressForm(field: keyof IAddressForm, value: string) {
+    this.order[field] = value;
+  } 
 
-  setAddress(value: string): void {
-		this.order.address = value;
-		this.validateOrder();
-	}
+  setContactsForm(field: keyof IContactsForm, value: string) {
+    this.order[field] = value;
+  }
+  
+  clearBasket(){
+    this.basket = [];
+    this.emitChanges('basket:changed', {basket: []});
+  }
+
+  clearOrder() {
+    this.order = {
+      payment: '',
+      address: '',
+      email: '',
+      phone: '',
+      items: [],
+      total: 0,
+    };
+  }
 }
-
-export type CatalogChangeEvent = {
-	catalog: Product[];
-};

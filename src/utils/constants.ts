@@ -6,9 +6,9 @@ export const settings = {
 };
 
 export const cardCategoryList: Record<string, string> = {
-	'софт-скил': 'soft',
-  'хард-скил': 'hard',
-  'кнопка': 'button',
-	'другое': 'other',
-	'дополнительное': 'additional',
+	'софт-скил': 'card__category_soft',
+  'хард-скил': 'card__category_hard',
+  'кнопка': 'card__category_button',
+	'другое': 'card__category_other',
+	'дополнительное': 'card__category_additional',
 };

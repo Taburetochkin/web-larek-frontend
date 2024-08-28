@@ -1,43 +1,44 @@
 export abstract class Component<T> {
-  protected constructor(protected readonly container: HTMLElement) {}
-
-  toggleClass(element: HTMLElement, className: string, state?: boolean) {
-    element.classList.toggle(className, state);
+  protected constructor (protected readonly container: HTMLElement) {
+    
   }
 
-  protected setVisible(element: HTMLElement) {
-		element.style.display = 'block';
-	}
+  toggleClass(element: HTMLElement, className: string, force?: boolean) {
+    element.classList.toggle(className, force);
+  }
 
-  protected setHidden(element: HTMLElement) {
-		element.style.display = 'none';
-	}
-
-  protected setText(element: HTMLElement, text: unknown) {
+  protected setText(element: HTMLElement, value: unknown) {
     if (element) {
-      element.textContent = String(text);
+        element.textContent = String(value);
     }
   }
 
-  setDisabled(element: HTMLElement, disabled: boolean) {
-		if (element) {
-			if (disabled) element.setAttribute('disabled', 'disabled');
-			else element.removeAttribute('disabled');
-		}
-	}
+  setDisabled(element: HTMLElement, state: boolean) {
+    if (element) {
+        if (state) element.setAttribute('disabled', 'disabled');
+        else element.removeAttribute('disabled');
+    }
+  }
+
+  protected setHidden(element: HTMLElement) {
+    element.style.display = 'none';
+  }
+
+  protected setVisible(element: HTMLElement) {
+    element.style.removeProperty('display');
+  }
 
   protected setImage(element: HTMLImageElement, src: string, alt?: string) {
-		if (element) {
-			element.src = src;
-			if (alt) {
-				element.alt = alt;
-			}
-		}
-	}
+    if (element) {
+        element.src = src;
+        if (alt) {
+            element.alt = alt;
+        }
+    }
+  }
 
   render(data?: Partial<T>): HTMLElement {
-    data ??= {};
-    Object.assign(this as object, data);
+    Object.assign(this as object, data ?? {});
     return this.container;
   }
 }

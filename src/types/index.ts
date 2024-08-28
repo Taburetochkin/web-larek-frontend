@@ -1,21 +1,29 @@
-export type TPaymentType = 'card' | 'cash'
-
-export type FormErrors = Partial<Record<keyof IOrder, string>>;
-
-export interface IProduct {
-	id: string;
-	description: string;
-	image: string;
-	title: string;
+export interface ILarekItem {
 	category: string;
-	price: number;
+	price: number | null;
 }
 
-export interface IOrder {
-  paymentMethod: string;
-  email: string;
-  phone: string;
+export interface IProductItem {
+	id: string;
+	title: string;
+	description?: string;
+	image: string;
+}
+
+export type IProduct = IProductItem & ILarekItem;
+
+
+export interface IAddressForm {
+	payment: string;
 	address: string;
+}
+
+export interface IContactsForm {
+	email: string;
+	phone: string;
+}
+
+export interface IOrder extends IAddressForm, IContactsForm {
 	items: string[];
 	total: number;
 }
@@ -25,27 +33,4 @@ export interface IOrderResult {
 	total: number;
 }
 
-export interface IOrderAddress {
-	paymentMethod: string;
-	address: string;
-}
-
-export interface IOrderContacts {
-	email: string;
-	phone: string;
-}
-
-export interface IBasketCard {
-	title: string;
-	price: number;
-}
-
-export interface IAppStateModel {
-	productsList: IProduct[];
-	basket: string[];
-	order: IOrder | null;
-}
-
-export interface ICardActions {
-	onClick: (event: MouseEvent) => void;
-}
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
