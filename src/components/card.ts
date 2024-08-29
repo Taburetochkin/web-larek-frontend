@@ -1,4 +1,4 @@
-import { Component } from "./base/Component";
+import { Component } from "./base/component";
 import { ensureElement } from "../utils/utils";
 import { cardCategoryList } from "../utils/constants";
 import { IProduct} from "../types";

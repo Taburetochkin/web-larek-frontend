@@ -1,6 +1,6 @@
-import { Model } from "./base/Model";
+import { Model } from "./base/model";
 import { IProduct, IAddressForm, IContactsForm, IOrder, FormErrors } from "../types";
-import { ICard } from "./Card";
+import { ICard } from "./card";
 
 export type CatalogChangeEvent = {
   catalog: ICard[];
@@ -21,8 +21,6 @@ export class AppState extends Model<IAppState> {
     address: '',
     email: '',
     phone: '',
-    items: [],
-    total: 0,
   };
   errors: FormErrors = {};
 
@@ -59,9 +57,13 @@ export class AppState extends Model<IAppState> {
     return this.basket;
   }
 
+  getBasketItems() {
+    return this.basket.map((item) => item.id);
+  }
+
   getSum(): number {
-    return this.basket.reduce((acc, curr) => {
-      return acc + curr.price;
+    return this.basket.reduce((total, curr) => {
+      return total + curr.price;
     }, 0);
   }
 
@@ -110,8 +112,6 @@ export class AppState extends Model<IAppState> {
       address: '',
       email: '',
       phone: '',
-      items: [],
-      total: 0,
     };
   }
 }

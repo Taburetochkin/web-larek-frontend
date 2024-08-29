@@ -4,19 +4,19 @@ import { API_URL, CDN_URL } from './utils/constants';
 import { cloneTemplate, ensureElement } from './utils/utils';
 
 import {EventEmitter} from "./components/base/events";
-import { LarekAPI } from './components/WebLarekApi';
-import { AppState } from './components/AppData';
-import { CatalogChangeEvent } from './components/AppData';
-import { Card, ICard } from './components/Card';
-import { Page } from './components/Page';
+import { LarekAPI } from './components/webLarekApi';
+import { AppState } from './components/appData';
+import { CatalogChangeEvent } from './components/appData';
+import { Card, ICard } from './components/card';
+import { Page } from './components/page';
 import { IProduct } from './types';
-import { Modal } from './components/common/Modal';
-import { Basket } from './components/modals/Basket';
-import { AddressForm } from './components/modals/Address';
+import { Modal } from './components/common/modal';
+import { Basket } from './components/modals/basket';
+import { AddressForm } from './components/modals/address';
 import { IAddressForm } from './types';
-import { ContactsForm } from './components/modals/Contacts';
+import { ContactsForm } from './components/modals/contacts';
 import { IContactsForm } from './types';
-import { Success } from './components/modals/Success';
+import { Success } from './components/modals/success';
 
 
 const events = new EventEmitter();
@@ -37,8 +37,7 @@ const successTemplate = ensureElement<HTMLTemplateElement>('#success');;
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 const orderAddress = new AddressForm(cloneTemplate(addressTemplate), events);
 const contacts = new ContactsForm(cloneTemplate(contactsTemplate), events);
-
-
+const success = new Success(cloneTemplate(successTemplate), {onClick: () => { modal.close();}});
 
 events.onAll(({ eventName, data }) => {
 	console.log(eventName, data);
@@ -149,7 +148,6 @@ events.on('basket:changed', () => {
 	})
 
 	basket.total = appData.getSum();
-	appData.order.total = appData.getSum();
 });
 
 events.on(/^order\..*:change/, (data: {field: keyof IAddressForm; value: string}) => {
@@ -191,22 +189,14 @@ events.on('contactsErrors:changed', (errors: Partial<IContactsForm>) => {
 
 events.on('contacts:submit', () => {
 	// console.log(appData.order);
-	appData.order.items = [];
-	appData.basket.forEach((item) => {
-		if (item.price !== null) {
-			appData.order.items.push(item.id);
-		}
-	})
 	api
-			.orderProducts(appData.order)
+			.orderProducts({
+				...appData.order,
+				total: appData.getSum(),
+				items: appData.getBasketItems(),
+			})
 			.then((res) => {
-				const success = new Success(cloneTemplate(successTemplate), 
-				appData.order.total, 
-				{onClick: () => {
-					modal.close();
-				}});
-				success.total = res.total;
-				modal.render({content: success.render({})});
+				modal.render({content: success.render({total: res.total})});
 				page.counter = 0;
 				appData.clearOrder();
 				appData.clearBasket();

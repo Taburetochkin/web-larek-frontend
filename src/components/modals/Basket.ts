@@ -1,5 +1,5 @@
 import { EventEmitter } from "../base/events";
-import { Component } from "../base/Component";
+import { Component } from "../base/component";
 import { createElement, ensureElement } from "../../utils/utils";
 
 export interface IBasket {

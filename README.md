@@ -99,12 +99,18 @@ interface IContactsForm {
 }
 ```
 
-**IOrder** - полная информация о заказе.
+**IOrder** - все данные пользователя о заказе.
 
 ```
-interface IOrder extends IAddressForm, IContactsForm {
-	items: string[];
+type IOrder = IAddressForm & IContactsForm;
+```
+
+**IOrderAfter** - полная информауия о заказе.
+
+```
+type IOrderAfter = IOrder & {
 	total: number;
+	items: string[];
 }
 ```
 
@@ -231,6 +237,7 @@ interface ICardActions {
 	- `addToBasket(item: ICard)` - добавляет товар в корзину.
 	- `deleteFromBasket(id: string)` - удаляет товар из корзины.
 	- `getBasket ()` - возвращает корзину.
+	- `getBasketItems()` - возвращает id товаров из корзины.
 	- `getSum()` - возвращает итоговую сумму товаров.
 	- `validateAddressForm()` - валидация формы адреса и способа оплаты.
 	- `validateContactsForm()` - валидация формы контактов.
@@ -369,7 +376,7 @@ interface ICardActions {
 
 - Наследуется от абстрактного класса Component<ISuccess>.
 - Используется для отображения основной информации по завершенному заказу.
-- **Конструктор** - `constructor(container: HTMLElement, total: number, actions: ISuccessActions)` - создает сообщение об успешном заказе с информацией о списанной сумме и кнопкой для закрытия. Функция, обрабатывающая клик на кнопку, передается через объект actions.
+- **Конструктор** - `constructor(container: HTMLElement, actions: ISuccessActions)` - создает сообщение об успешном заказе с информацией о списанной сумме и кнопкой для закрытия. Функция, обрабатывающая клик на кнопку, передается через объект actions.
 - **Свойства** 
 	- `total: HTMLElement` -  Элемент с общей суммой заказа.
 	- `close: HTMLElement` - Кнопка закрытия окна.
@@ -431,4 +438,4 @@ interface ICardActions {
 - **Методы**
   - `getProductsList: () => Promise<IProduct[]>` - получает информацию по всем доступным товарам
   - `getProduct: (id: string) => Promise<IProduct>` - получает информацию по конкретному товару
-  - `orderProducts: (order: IOrder) => Promise<IOrderResult>` - оформление заказа через соответствующий запрос на сервер
+  - `orderProducts: (order: IOrderAfter) => Promise<IOrderResult>` - оформление заказа через соответствующий запрос на сервер

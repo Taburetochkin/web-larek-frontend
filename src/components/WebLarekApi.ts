@@ -1,10 +1,10 @@
 import { Api, ApiListResponse } from "./base/api";
-import { IProduct, IOrder, IOrderResult } from "../types";
+import { IProduct, IOrderAfter, IOrderResult } from "../types";
 
 export interface IWebLarekApi {
   getProductList: () => Promise<IProduct[]>;
   getProductItem: (id: string) => Promise<IProduct>;
-  orderProducts: (order: IOrder) => Promise<IOrderResult>;
+  orderProducts: (order: IOrderAfter) => Promise<IOrderResult>;
 }
 
 export class LarekAPI extends Api implements IWebLarekApi {
@@ -33,7 +33,7 @@ export class LarekAPI extends Api implements IWebLarekApi {
       );
   }
 
-  orderProducts(order: IOrder): Promise<IOrderResult> {
+  orderProducts(order: IOrderAfter): Promise<IOrderResult> {
       return this.post('/order', order).then(
           (data: IOrderResult) => data
       );

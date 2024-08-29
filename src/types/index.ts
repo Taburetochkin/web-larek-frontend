@@ -23,9 +23,11 @@ export interface IContactsForm {
 	phone: string;
 }
 
-export interface IOrder extends IAddressForm, IContactsForm {
-	items: string[];
+export type IOrder = IAddressForm & IContactsForm; 
+
+export type IOrderAfter = IOrder & {
 	total: number;
+	items: string[];
 }
 
 export interface IOrderResult {

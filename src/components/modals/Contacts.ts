@@ -1,4 +1,4 @@
-import { Form } from "../common/Form";
+import { Form } from "../common/form";
 import { IEvents } from "../base/events";
 import { IContactsForm } from "../../types";
 
