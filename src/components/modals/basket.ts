@@ -35,6 +35,7 @@ export class Basket extends Component<IBasket> {
 				})
 			);
 		}
+		this.setDisabled(this._button, items.length === 0);
 	}
 
   set total(total: number) {
